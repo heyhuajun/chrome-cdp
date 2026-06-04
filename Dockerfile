@@ -42,6 +42,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         gnupg \
         apt-transport-https \
         fonts-liberation \
+        fonts-noto-cjk \
+        fonts-wqy-microhei \
+        fonts-wqy-zenhei \
         libasound2 \
         libatk-bridge2.0-0 \
         libatk1.0-0 \
@@ -120,6 +123,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 COPY entrypoint.sh /app/entrypoint.sh
 COPY config/ /app/config/
+COPY extensions/ /app/extensions/
 RUN chmod +x /app/entrypoint.sh
 
 # ============================================

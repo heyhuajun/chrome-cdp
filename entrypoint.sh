@@ -82,8 +82,19 @@ CHROME_CMD="google-chrome \
     --remote-debugging-address=0.0.0.0 \
     --remote-allow-origins=* \
     --user-data-dir=${PROFILES_DIR} \
-    --no-first-run \
-    ${CHROME_FLAGS}"
+    --no-first-run"
+
+# 预装扩展（如果存在）
+EXTENSIONS_DIR="/app/extensions"
+if [ -d "$EXTENSIONS_DIR" ]; then
+    for ext_dir in "$EXTENSIONS_DIR"/*/; do
+        if [ -f "${ext_dir}manifest.json" ]; then
+            CHROME_CMD="$CHROME_CMD --load-extension=${ext_dir}"
+        fi
+    done
+fi
+
+CHROME_CMD="$CHROME_CMD ${CHROME_FLAGS}"
 
 echo "执行: $CHROME_CMD"
 $CHROME_CMD > /var/log/chrome.log 2>&1 &
