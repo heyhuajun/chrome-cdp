@@ -12,7 +12,10 @@
 set -e
 
 PROFILES_DIR=${PROFILES_DIR:-/profiles}
+# WINDOW_SIZE 格式: "WIDTH,HEIGHT"（用户友好），Xvfb 需要 "WxHxD"
 WINDOW_SIZE=${WINDOW_SIZE:-1280,720}
+WIDTH=$(echo $WINDOW_SIZE | cut -d, -f1)
+HEIGHT=$(echo $WINDOW_SIZE | cut -d, -f2)
 CHROME_FLAGS=${CHROME_FLAGS:-""}
 
 echo "=========================================="
@@ -23,7 +26,7 @@ echo "  noVNC:         http://localhost:6080"
 echo "  VNC:           localhost:5900"
 echo "  CDP:           http://localhost:9222"
 echo "  Profiles:      $PROFILES_DIR"
-echo "  Window size:   $WINDOW_SIZE"
+echo "  Window size:   ${WIDTH}x${HEIGHT}"
 echo "=========================================="
 
 # ============================================
@@ -39,7 +42,7 @@ rm -f "$PROFILES_DIR"/SingletonLock \
 # 2. 启动 Xvfb 虚拟显示
 # ============================================
 echo "[1/4] 启动 Xvfb 虚拟显示..."
-Xvfb :99 -screen 0 ${WINDOW_SIZE}x24 -ac -nolisten tcp &
+Xvfb :99 -screen 0 ${WIDTH}x${HEIGHT}x24 -ac -nolisten tcp &
 XVFB_PID=$!
 sleep 2
 
@@ -74,7 +77,7 @@ CHROME_CMD="google-chrome \
     --disable-dev-shm-usage \
     --disable-gpu \
     --disable-software-rasterizer \
-    --window-size=${WINDOW_SIZE} \
+    --window-size=${WIDTH},${HEIGHT} \
     --remote-debugging-port=9222 \
     --remote-debugging-address=0.0.0.0 \
     --remote-allow-origins=* \
