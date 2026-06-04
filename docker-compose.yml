@@ -1,0 +1,73 @@
+version: "3.8"
+
+# =============================================================
+# chrome-cdp docker-compose 部署示例
+# =============================================================
+# 
+# 启动：docker compose up -d
+# 停止：docker compose down
+# 日志：docker compose logs -f
+# 
+# 多实例并行（给多 Agent 隔离）：
+#   docker compose up -d --scale chrome-cdp=3
+#   （但要注意端口冲突，单实例绑定端口是固定的）
+# =============================================================
+
+services:
+  chrome-cdp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: heyhuajun/chrome-cdp:latest
+    container_name: chrome-cdp
+    
+    # 自动重启
+    restart: unless-stopped
+    
+    # 网络
+    network_mode: bridge
+    
+    # 端口映射
+    # 6080: noVNC Web VNC（浏览器访问）
+    # 5900: x11vnc（VNC 客户端）
+    # 9222: CDP 端口（Agent 通过 Playwright/Puppeteer/opencli 调用）
+    ports:
+      - "6080:6080"
+      - "5900:5900"
+      - "9222:9222"
+    
+    # 共享内存（Chrome 需要大内存）
+    shm_size: 2g
+    
+    # 数据持久化（cookie, history, bookmarks）
+    volumes:
+      - chrome-profiles:/profiles
+    
+    # 环境变量
+    environment:
+      - TZ=Asia/Shanghai
+      - PROFILES_DIR=/profiles
+      - WINDOW_SIZE=1280,720
+    
+    # 资源限制（生产环境建议加上）
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "2.0"
+    #       memory: 2G
+    #     reservations:
+    #       cpus: "0.5"
+    #       memory: 512M
+    
+    # 健康检查（Docker 自带）
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9222/json/version >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  chrome-profiles:
+    driver: local
+    name: chrome-cdp-profiles

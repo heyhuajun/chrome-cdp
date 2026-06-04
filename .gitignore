@@ -1,0 +1,19 @@
+# 临时文件
+*.log
+*.tmp
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 测试输出
+test-output/
+*.png
+!docs/**/*.png

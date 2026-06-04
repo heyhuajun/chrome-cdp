@@ -1,0 +1,51 @@
+# ============================================
+# .dockerignore - 排除不需要打进镜像的文件
+# ============================================
+
+# Git
+.git
+.gitignore
+.github
+
+# 文档
+README.md
+LICENSE
+docs/
+*.md
+
+# 示例代码
+examples/
+config/*.local
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+.mypy_cache
+
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+
+# 编辑器
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 测试
+tests/
+*.test
+*.spec
+
+# Docker 相关
+Dockerfile
+docker-compose.yml
+.dockerignore
