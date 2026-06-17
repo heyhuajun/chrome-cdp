@@ -113,7 +113,7 @@ RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub \
 RUN apt-get update && apt-get install -y --no-install-recommends \
         nodejs \
         npm \
-    && npm install -g @jackwener/opencli \
+    && npm install -g @jackwener/opencli@1.8.4 \
     && npm cache clean --force \
     && rm -rf /var/lib/apt/lists/*
 
