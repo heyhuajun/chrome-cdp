@@ -108,23 +108,37 @@ RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub \
     && rm -rf /var/lib/apt/lists/*
 
 # ============================================
-# 4. Node.js + opencli（最新版）
+# 4. Node.js + opencli（构建时拉取最新版，不钉版本）
 # ============================================
 RUN apt-get update && apt-get install -y --no-install-recommends \
         nodejs \
         npm \
-    && npm install -g @jackwener/opencli@1.8.4 \
+    && npm install -g @jackwener/opencli \
     && npm cache clean --force \
     && rm -rf /var/lib/apt/lists/*
 
 # ============================================
-# 5. 应用配置
+# 5. 应用配置 + 构建时拉取最新 Browser Bridge
+#    - Bridge 作为 GitHub Releases 资产单独发布，与 opencli 同批，
+#      构建时从 latest 下载并覆盖 vendored 扩展，保证二者始终最新且版本同步
+#    - 仓库内 extensions/opencli/ 仅作离线兜底（下载失败时使用）
 # ============================================
 WORKDIR /app
 COPY entrypoint.sh /app/entrypoint.sh
 COPY config/ /app/config/
 COPY extensions/ /app/extensions/
-RUN chmod +x /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh \
+    && BRIDGE_JSON=$(curl -fsSL https://api.github.com/repos/jackwener/OpenCLI/releases/latest 2>/dev/null || true) \
+    && BRIDGE_URL=$(printf '%s' "$BRIDGE_JSON" | grep -oE 'https://[^"]*opencli-extension[^"]*\.zip' | head -1) \
+    && if [ -n "$BRIDGE_URL" ]; then \
+         echo ">> 拉取最新 Browser Bridge: $BRIDGE_URL" \
+         && curl -fsSL "$BRIDGE_URL" -o /tmp/opencli-bridge.zip \
+         && python3 -c "import zipfile; zipfile.ZipFile('/tmp/opencli-bridge.zip').extractall('/app/extensions/opencli')" \
+         && rm -f /tmp/opencli-bridge.zip \
+         && echo ">> Browser Bridge 已更新为最新版"; \
+       else \
+         echo ">> WARN: 无法从 GitHub 获取最新 Bridge，保留 vendored 扩展兜底"; \
+       fi
 
 # ============================================
 # 6. 健康检查（指向 CDP 9222）
