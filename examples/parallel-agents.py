@@ -7,9 +7,9 @@ parallel-agents.py - 多 Agent 并行使用 chrome-cdp 示例
   互不干扰。
 
 部署多个 chrome-cdp 实例：
-  docker run -d --name chrome-1 -p 9222:9222 heyhuajun/chrome-cdp:latest
-  docker run -d --name chrome-2 -p 9223:9222 heyhuajun/chrome-cdp:latest
-  docker run -d --name chrome-3 -p 9224:9222 heyhuajun/chrome-cdp:latest
+  docker run -d --name chrome-1 -p 9222:9222 xy111a/chrome-cdp:latest
+  docker run -d --name chrome-2 -p 9223:9222 xy111a/chrome-cdp:latest
+  docker run -d --name chrome-3 -p 9224:9222 xy111a/chrome-cdp:latest
 
 依赖：
   pip install playwright

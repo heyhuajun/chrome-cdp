@@ -10,8 +10,8 @@
 #   - CDP 9222 直连（Playwright/Puppeteer/opencli 都用）
 #   - 内置 opencli CLI 工具
 #
-# 构建: docker build -t heyhuajun/chrome-cdp:latest .
-# 跑:   docker run -d -p 6080:6080 -p 9222:9222 heyhuajun/chrome-cdp:latest
+# 构建: docker build -t xy111a/chrome-cdp:latest .
+# 跑:   docker run -d -p 6080:6080 -p 9222:9222 xy111a/chrome-cdp:latest
 # =============================================================
 
 FROM debian:13-slim
@@ -21,9 +21,9 @@ FROM debian:13-slim
 # ============================================
 LABEL org.opencontainers.image.title="chrome-cdp" \
       org.opencontainers.image.description="Lightweight Chrome with CDP + VNC for agent automation" \
-      org.opencontainers.image.source="https://github.com/heyhuajun/chrome-cdp" \
+      org.opencontainers.image.source="https://github.com/xy111a/chrome-cdp" \
       org.opencontainers.image.licenses="MIT" \
-      org.opencontainers.image.vendor="heyhuajun"
+      org.opencontainers.image.vendor="xy111a"
 
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=en_US.UTF-8 \
@@ -108,19 +108,20 @@ RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub \
     && rm -rf /var/lib/apt/lists/*
 
 # ============================================
-# 4. Node.js + opencli（构建时拉取最新版，不钉版本）
+# 4. Node.js + opencli（钉版本，避免构建时漂移）
 # ============================================
 RUN apt-get update && apt-get install -y --no-install-recommends \
         nodejs \
         npm \
-    && npm install -g @jackwener/opencli \
+    && npm install -g @jackwener/opencli@1.8.7 \
     && npm cache clean --force \
     && rm -rf /var/lib/apt/lists/*
 
 # ============================================
-# 5. 应用配置 + 构建时拉取最新 Browser Bridge
+# 5. 应用配置 + 钉版本拉取 Browser Bridge
 #    - Bridge 作为 GitHub Releases 资产单独发布，与 opencli 同批，
-#      构建时从 latest 下载并覆盖 vendored 扩展，保证二者始终最新且版本同步
+#      钉到与 opencli 一致的 v1.8.7（= extension 1.0.23），
+#      保证二者版本同步且构建可复现（不再随 latest 漂移）
 #    - 仓库内 extensions/opencli/ 仅作离线兜底（下载失败时使用）
 # ============================================
 WORKDIR /app
@@ -128,7 +129,7 @@ COPY entrypoint.sh /app/entrypoint.sh
 COPY config/ /app/config/
 COPY extensions/ /app/extensions/
 RUN chmod +x /app/entrypoint.sh \
-    && BRIDGE_JSON=$(curl -fsSL https://api.github.com/repos/jackwener/OpenCLI/releases/latest 2>/dev/null || true) \
+    && BRIDGE_JSON=$(curl -fsSL https://api.github.com/repos/jackwener/OpenCLI/releases/tags/v1.8.7 2>/dev/null || true) \
     && BRIDGE_URL=$(printf '%s' "$BRIDGE_JSON" | grep -oE 'https://[^"]*opencli-extension[^"]*\.zip' | head -1) \
     && if [ -n "$BRIDGE_URL" ]; then \
          echo ">> 拉取最新 Browser Bridge: $BRIDGE_URL" \

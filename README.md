@@ -38,13 +38,13 @@ docker run -d \
     -p 5900:5900 \
     -p 9222:9222 \
     -v chrome-cdp-profiles:/profiles \
-    heyhuajun/chrome-cdp:latest
+    xy111a/chrome-cdp:latest
 ```
 
 ### 2. 用 docker-compose
 
 ```bash
-git clone https://github.com/heyhuajun/chrome-cdp.git
+git clone https://github.com/xy111a/chrome-cdp.git
 cd chrome-cdp
 docker compose up -d
 ```
@@ -52,9 +52,9 @@ docker compose up -d
 ### 3. 自己构建
 
 ```bash
-git clone https://github.com/heyhuajun/chrome-cdp.git
+git clone https://github.com/xy111a/chrome-cdp.git
 cd chrome-cdp
-docker build -t heyhuajun/chrome-cdp:latest .
+docker build -t xy111a/chrome-cdp:latest .
 ```
 
 ## 🔌 使用方式
@@ -135,7 +135,7 @@ print(ws.recv())
 docker run -d --name chrome-cdp \
     -e WINDOW_SIZE=1920,1080 \
     -p 6080:6080 -p 9222:9222 \
-    heyhuajun/chrome-cdp:latest
+    xy111a/chrome-cdp:latest
 ```
 
 ### 示例：增加 Chrome 参数
@@ -144,7 +144,7 @@ docker run -d --name chrome-cdp \
 docker run -d --name chrome-cdp \
     -e CHROME_FLAGS="--disable-web-security --user-agent=Mozilla/5.0..." \
     -p 6080:6080 -p 9222:9222 \
-    heyhuajun/chrome-cdp:latest
+    xy111a/chrome-cdp:latest
 ```
 
 ## 🔄 多 Agent 并行部署
@@ -153,9 +153,9 @@ docker run -d --name chrome-cdp \
 
 ```bash
 # 方式 1：手动启动多个容器
-docker run -d --name chrome-agent-1 -p 6080:6080 -p 9222:9222 heyhuajun/chrome-cdp:latest
-docker run -d --name chrome-agent-2 -p 6081:6080 -p 9223:9222 heyhuajun/chrome-cdp:latest
-docker run -d --name chrome-agent-3 -p 6082:6080 -p 9224:9222 heyhuajun/chrome-cdp:latest
+docker run -d --name chrome-agent-1 -p 6080:6080 -p 9222:9222 xy111a/chrome-cdp:latest
+docker run -d --name chrome-agent-2 -p 6081:6080 -p 9223:9222 xy111a/chrome-cdp:latest
+docker run -d --name chrome-agent-3 -p 6082:6080 -p 9224:9222 xy111a/chrome-cdp:latest
 ```
 
 ```bash

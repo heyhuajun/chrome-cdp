@@ -12,7 +12,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: heyhuajun/chrome-cdp
+  IMAGE_NAME: xy111a/chrome-cdp
 
 jobs:
   build:
